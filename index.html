@@ -1,0 +1,36 @@
+<!doctype html>
+
+<!-- Sniper game by Kevin Avery for CS4540 -->
+<html>
+
+<head>
+    <title>Sniper</title>
+
+    <meta name="description" content="HTML5 Sniper game">
+    <meta name="author" content="Kevin Avery">
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+
+    <script src="scripts/Sniper.js"></script>
+    <script src="scripts/game-engine.js"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/enemy.js"></script>
+    <script src="scripts/sound-player.js"></script>
+    <script src="scripts/accuracy-meter.js"></script>
+    <script src="scripts/main.js"></script>
+</head>
+
+<body onload="Sniper.main()">
+    <div class="no-select" id="title-container">
+        <p id="title">Sniper</p>
+
+        <p id="subtitle">
+            Accuracy <span id="accuracy">0/0</span>
+        </p>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+</body>
+
+</html>

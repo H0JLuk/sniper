@@ -1,0 +1,64 @@
+/**
+ * The CSS for the Sniper game by Kevin Avery.
+ */
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #060606;
+    width: 100%;
+    height: 100%;
+}
+
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#title-container {
+    display: table;
+    margin: 0 auto;
+}
+
+#title {
+    margin: 0;
+    text-align:center;
+    color: white;
+    font-size: 30pt;
+}
+
+#subtitle {
+    margin: 0;
+    text-align: center;
+    color: gray;
+    font-size: 14pt;
+    font-family: Helvetica;
+}
+
+a {
+    color: white;
+}
+
+h1 {
+    color: white;
+    font-size: 28px;
+}
+
+#game-canvas {
+    cursor: none;
+}
+
+.content-container {
+    width: 400px;
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+.content {
+    color: gray;
+    font-size: 14pt;
+}
