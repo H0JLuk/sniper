@@ -1,36 +1,65 @@
 <!doctype html>
-
-<!-- Sniper game by Kevin Avery for CS4540 -->
 <html>
 
 <head>
-    <title>Sniper</title>
+  <title>Sniper</title>
 
-    <meta name="description" content="HTML5 Sniper game">
-    <meta name="author" content="Kevin Avery">
-    <meta charset="UTF-8">
+  <meta name="description" content="HTML5 Sniper game">
+  <meta charset="UTF-8">
 
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+  <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <script src="scripts/Sniper.js"></script>
-    <script src="scripts/game-engine.js"></script>
-    <script src="scripts/game.js"></script>
-    <script src="scripts/enemy.js"></script>
-    <script src="scripts/sound-player.js"></script>
-    <script src="scripts/accuracy-meter.js"></script>
-    <script src="scripts/main.js"></script>
+    body {
+      background-color: #060606;
+      overflow: hidden;
+      ;
+    }
+
+    #title-container {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .title {
+      text-align: center;
+      color: white;
+      font-size: 30pt;
+    }
+
+    .subtitle {
+      margin: 0;
+      text-align: center;
+      color: gray;
+      font-size: 14pt;
+      font-family: Helvetica;
+    }
+
+    #game-canvas {
+      cursor: none;
+    }
+  </style>
 </head>
 
-<body onload="Sniper.main()">
-    <div class="no-select" id="title-container">
-        <p id="title">Sniper</p>
+<body>
+  <div id="title-container">
+    <p class="title">Sniper</p>
 
-        <p id="subtitle">
-            Accuracy <span id="accuracy">0/0</span>
-        </p>
-    </div>
+    <p class="subtitle">
+      Accuracy <span id="accuracy">0/0</span>
+    </p>
+  </div>
 
-    <canvas id="game-canvas"></canvas>
+  <canvas id="game-canvas"></canvas>
 </body>
 
 </html>
