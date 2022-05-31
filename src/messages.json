@@ -1,0 +1,6 @@
+{
+  "CONNECT": "CONNECT",
+  "LEAVE": "LEAVE",
+  "MOVE": "MOVE",
+  "SHOW": "SHOW"
+}

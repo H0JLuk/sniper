@@ -4,7 +4,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (_env, argv) => ({
   mode: argv.mode,
-  entry: './src/index.js',
+  entry: './src/index.ts',
   output: {
     filename: '[name].[fullhash].js',
     path: path.resolve(__dirname, 'dist'),
@@ -26,7 +26,7 @@ module.exports = (_env, argv) => ({
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: /node_modules|\.d\.ts$/,
       },
     ],
   },

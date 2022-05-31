@@ -1,4 +1,6 @@
-const createEnemy = (pos: number[], m16Sound: HTMLAudioElement) => {
+import { SoundType } from './types';
+
+const createEnemy = (pos: number[], m16Sound: SoundType) => {
   const COUNTER_RESET_PERIOD = 40,
     NUM_AIM_PERIODS = 1;
 

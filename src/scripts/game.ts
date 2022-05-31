@@ -1,5 +1,7 @@
 import { createAccuracyMeter, createEnemy } from './index';
-import type { Enemy } from '../@custom-types/Enemy';
+import type { ServerEnemy, SoundType } from './types';
+
+type Enemy = ReturnType<typeof createEnemy>;
 
 const OSCILLATION_AMPLITUDE = 5,
   OSCILLATION_FREQ_FACTOR = 0.05,
@@ -13,8 +15,9 @@ type CreateGameArgs = {
   enemyImg: HTMLImageElement;
   enemyShootingImg: HTMLImageElement;
   scopeImg: HTMLImageElement;
-  sniperSound: HTMLAudioElement;
-  m16Sound: HTMLAudioElement;
+  sniperSound: SoundType;
+  m16Sound: SoundType;
+  serverEnemies: ServerEnemy[];
 };
 
 const createGame = ({
@@ -25,6 +28,7 @@ const createGame = ({
   scopeImg,
   sniperSound,
   m16Sound,
+  serverEnemies,
 }: CreateGameArgs) => {
   const can = <HTMLCanvasElement>document.getElementById('game-canvas'),
     ctx = can.getContext('2d');
@@ -32,8 +36,9 @@ const createGame = ({
   let oscCounter = 0,
     recoilCounter = 0;
 
+  const enemies = <Enemy[]>[];
+
   let lastEnemyShot: Enemy | undefined,
-    enemies = <Enemy[]>[],
     curSpawnBuilding: Enemy[] | undefined,
     enemiesByBuilding: Enemy[][] | undefined,
     clickWaiting = false,
@@ -49,6 +54,7 @@ const createGame = ({
   setWindowAndScope();
 
   initializeEnemies();
+  console.log(1);
 
   const accuracyMeter = createAccuracyMeter();
 
@@ -57,7 +63,7 @@ const createGame = ({
     moveY = evt.pageY;
   };
 
-  can.onmousedown = (evt) => {
+  can.onmousedown = () => {
     clickWaiting = true;
   };
 
@@ -101,6 +107,8 @@ const createGame = ({
       [3600, 776, 43, 43, 26],
     ];
 
+    // const enemiesByBuilding = serverEnemies.map((i) => createEnemies(i));
+
     const enemiesByBuilding = [
       createEnemies(bld0EnemyPositions),
       createEnemies(bld1EnemyPositions),
@@ -116,7 +124,7 @@ const createGame = ({
     curSpawnBuilding = chooseRandom(enemiesByBuilding);
   }
 
-  function chooseRandom<T extends any>(arr: T[]): T {
+  function chooseRandom<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
@@ -130,8 +138,6 @@ const createGame = ({
    * may not actually be spawned.
    */
   function spawnEnemy() {
-    var newEnemy, numTries;
-
     // Probabilistically change spawn building
     if (Math.random() > 0.5) {
       curSpawnBuilding = chooseRandom(enemiesByBuilding);
@@ -141,8 +147,8 @@ const createGame = ({
     // Loop expires if it's taking too many tries to find a
     // valid new enemy to spawn. This could be improved by
     // keeping track of the non-visible enemies.
-    for (numTries = 0; numTries < 10; numTries++) {
-      newEnemy = chooseRandom(curSpawnBuilding);
+    for (let numTries = 0; numTries < 10; numTries++) {
+      const newEnemy = chooseRandom(curSpawnBuilding);
 
       if (!newEnemy.isVisible() && newEnemy !== lastEnemyShot) {
         newEnemy.show();
@@ -152,7 +158,7 @@ const createGame = ({
   }
 
   function calcVisibleEnemies() {
-    var numHits = accuracyMeter.hits;
+    const numHits = accuracyMeter.hits;
     if (numHits < 5) {
       return 1;
     } else if (numHits < 25) {
@@ -178,7 +184,7 @@ const createGame = ({
 
       let anyHit = false;
       enemies.forEach(function (e) {
-        var hit = e.tryShot(can.width / 2 - xOffset, can.height / 2 - yOffset);
+        const hit = e.tryShot(can.width / 2 - xOffset, can.height / 2 - yOffset);
         if (hit) {
           lastEnemyShot = e;
           anyHit = true;
@@ -219,16 +225,14 @@ const createGame = ({
   }
 
   function draw() {
-    var yOscillation, yRecoil, cursorScaleFactor;
-
     // Do y-axis oscillation
-    yOscillation = Math.sin(oscCounter) * OSCILLATION_AMPLITUDE;
+    const yOscillation = Math.sin(oscCounter) * OSCILLATION_AMPLITUDE;
 
     // Do y-axis recoil
-    yRecoil = Math.pow(recoilCounter - RECOIL_DURATION, 2) * Math.sin(recoilCounter) * RECOIL_AMPLITUDE;
+    const yRecoil = Math.pow(recoilCounter - RECOIL_DURATION, 2) * Math.sin(recoilCounter) * RECOIL_AMPLITUDE;
 
     // Move image much farther than user moves mouse
-    cursorScaleFactor = (bldBgImg.width / can.width) * 2;
+    const cursorScaleFactor = (bldBgImg.width / can.width) * 2;
     xOffset = bldBgImg.width / 2 - moveX * cursorScaleFactor;
     yOffset = bldBgImg.height / 2 - moveY * cursorScaleFactor + yOscillation + yRecoil;
 
@@ -252,7 +256,7 @@ const createGame = ({
     ctx.drawImage(bldBgImg, xOffset, yOffset, bldBgImg.width, bldBgImg.height);
 
     // Draw the enemies
-    enemies.forEach(function (e) {
+    enemies.forEach((e) => {
       if (e.isVisible()) {
         const img = e.isShooting() ? enemyShootingImg : enemyImg; // TODO:
         ctx.drawImage(img, xOffset + e.getX(), yOffset + e.getY(), img.width, img.height);
@@ -264,7 +268,7 @@ const createGame = ({
       }
     });
 
-    // Draw the foregrounv
+    // Draw the foreground
     ctx.drawImage(bldFgImg, xOffset, yOffset, bldBgImg.width, bldBgImg.height);
 
     // Draw the scope
