@@ -1,28 +1,30 @@
 import { SoundType } from './types';
 
-const createEnemy = (pos: number[], m16Sound: SoundType) => {
+const createEnemy = (initialPos: number[], m16Sound: SoundType, id: number) => {
   const COUNTER_RESET_PERIOD = 40,
     NUM_AIM_PERIODS = 1;
 
-  let visible = false,
+  let visible = true,
     shooting = false,
     headRegion: number[],
     bodyRegion: number[],
     counter = 0,
-    aimPeriods = 0;
+    aimPeriods = 0,
+    pos: number[] = [];
 
-  initRegions();
+  initRegions(initialPos);
 
   /**
    * Initializes the head and body regions that can be
    * used to determine if this has been shot.
    */
-  function initRegions() {
+  function initRegions(newPos: number[]) {
+    pos = newPos;
     headRegion = [pos[0] + pos[2] * 0.5, pos[1] + pos[3] * 0.1, pos[2] * 0.25, pos[3] * 0.35];
 
     bodyRegion = [
       pos[0] + pos[2] * 0.1,
-      headRegion[1] + headRegion[3], // right below headRegion
+      pos[1] + headRegion[3], // right below headRegion
       pos[2] * 0.8,
       pos[3] - pos[4], // trim off the bottom of the body
     ];
@@ -78,10 +80,17 @@ const createEnemy = (pos: number[], m16Sound: SoundType) => {
       counter = 0;
       aimPeriods = 0;
       visible = false;
+      setTimeout(() => {
+        visible = true;
+      }, 3000);
       shooting = false;
     }
 
     return hit;
+  }
+
+  function changeCoords(coords: number[]) {
+    initRegions(coords);
   }
 
   /**
@@ -142,11 +151,13 @@ const createEnemy = (pos: number[], m16Sound: SoundType) => {
     getRegion,
     show,
     tryShot,
+    changeCoords,
     update,
     isVisible,
     isShooting,
     getX,
     getY,
+    id,
   };
 };
 

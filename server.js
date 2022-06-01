@@ -27,16 +27,18 @@ const coords = [
   ],
 ];
 
-const MAX_PLAYERS = Math.min(2, coords.length);
+const MAX_PLAYERS = Math.min(3, coords.length);
 const playerList = [];
 
 wss.on('connection', (ws) => {
   const player = createNewPlayer();
 
   if (!player) {
+    const err = 'Server is full';
+    ws.send(toJSON({ type: MSG.ERROR, data: err }));
     ws.terminate();
     ws.close();
-    console.log('Server is full');
+    console.log(err);
     return;
   }
 
@@ -74,12 +76,10 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     console.log(player.id + ' - has left the server.');
-    broadcast(
-      toJSON({
-        type: MSG.LEAVE,
-        data: player.id,
-      })
-    );
+    broadcast({
+      type: MSG.LEAVE,
+      data: player.id,
+    });
     delete playerList[player.id];
   });
 });
@@ -102,10 +102,11 @@ function moveHandler(msg, ws) {
   if (newCoords) {
     playerList[ws.id].coords = newCoords;
     broadcast(
-      toJSON({
+      {
         data: playerList[ws.id],
         type: MSG.MOVE,
-      })
+      },
+      ws
     );
   }
 }

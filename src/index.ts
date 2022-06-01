@@ -1,5 +1,5 @@
 import { createGame, createGameEngine, createSoundPlayer } from './scripts/index';
-import type { SoundType } from './scripts/types';
+import type { Game, ServerEnemy, SoundType } from './scripts/types';
 
 import bldBgImgPath from './images/bld_bg.jpg';
 import bldFgImgPath from './images/bld_fg.png';
@@ -9,6 +9,8 @@ import scopeImgPath from './images/scope.png';
 
 import sniperSoundPath from './sounds/sniper_fire.mp3';
 import m16SoundPath from './sounds/m16_fire.mp3';
+
+import MSG from './messages.json';
 
 const main = () => {
   let windowReady = false;
@@ -24,34 +26,72 @@ const main = () => {
     if (windowReady && bldBgImg && bldFgImg && enemyImg && enemyShootingImg && scopeImg) {
       const socket = new WebSocket('ws://localhost:8000');
 
-      const game = createGameEngine();
+      const gameEngine = createGameEngine();
+      let game: Game;
 
       socket.onopen = (ev) => {
         console.log('[OPEN]', ev);
       };
 
       socket.onmessage = (ev) => {
-        const data = JSON.parse(ev.data);
-        console.log('[MSG]', data);
+        const message = JSON.parse(ev.data);
+        console.log('[MSG]', message);
 
-        if (data.type === 'SHOW') {
-          game.start(
-            createGame({
-              bldBgImg,
-              bldFgImg,
-              enemyImg,
-              enemyShootingImg,
-              scopeImg,
-              sniperSound,
-              m16Sound,
-              serverEnemies: data.data,
-            })
-          );
+        document.addEventListener('keyup', function (event) {
+          const { key } = event;
+          const isLeftKey = ['ArrowLeft', 'a'].includes(key);
+          const isRightKey = ['ArrowRight', 'd'].includes(key);
+          debugger;
+          const side = isLeftKey ? 'LEFT' : isRightKey ? 'RIGHT' : null;
+
+          side &&
+            socket.send(
+              JSON.stringify({
+                side,
+                type: MSG.MOVE,
+              })
+            );
+        });
+
+        if (message.type === MSG.SHOW) {
+          game = createGame({
+            bldBgImg,
+            bldFgImg,
+            enemyImg,
+            enemyShootingImg,
+            scopeImg,
+            sniperSound,
+            m16Sound,
+            serverEnemies: message.data,
+          });
+          gameEngine.start(game);
+        }
+
+        if (message.type === MSG.CONNECT) {
+          gameEngine.addPlayer(game, message.data as ServerEnemy);
+        }
+
+        if (message.type === MSG.LEAVE) {
+          gameEngine.removePlayer(game, message.data as number);
+        }
+
+        if (message.type === MSG.MOVE) {
+          gameEngine.movePlayer(game, message.data as ServerEnemy);
+        }
+
+        if (message.type === MSG.ERROR) {
+          gameEngine.stop();
+          alert(message.data);
+          document.querySelector('.subtitle').innerHTML = 'Reload page please';
         }
       };
 
+      socket.onerror = (err) => {
+        console.log('[ERR]', err);
+      };
+
       socket.onclose = (ev) => {
-        console.log('[CLOSE]', ev);
+        gameEngine.stop();
       };
     }
   };

@@ -2,5 +2,6 @@
   "CONNECT": "CONNECT",
   "LEAVE": "LEAVE",
   "MOVE": "MOVE",
-  "SHOW": "SHOW"
+  "SHOW": "SHOW",
+  "ERROR": "ERROR"
 }

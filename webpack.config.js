@@ -23,6 +23,10 @@ module.exports = (_env, argv) => ({
         test: /\.mp3$/i,
         use: ['file-loader'],
       },
+      // {
+      //   test: /\.json$/i,
+      //   use: ['json-loader'],
+      // },
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
@@ -31,6 +35,6 @@ module.exports = (_env, argv) => ({
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.js', '.json'],
   },
 });

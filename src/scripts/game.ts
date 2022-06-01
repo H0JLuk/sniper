@@ -78,6 +78,20 @@ const createGame = ({
     scopeTop = (can.height - scopeImg.height) / 2;
   }
 
+  function addPlayer(enemy: ServerEnemy) {
+    enemies.push(createEnemy(enemy.coords, m16Sound, enemy.id));
+  }
+
+  function movePlayer({ id, coords }: ServerEnemy) {
+    const enemy = enemies.find((i) => i.id === id);
+    enemy.changeCoords(coords);
+  }
+
+  function removePlayer(enemyId: number) {
+    const enemyIdx = enemies.findIndex((i) => i.id === enemyId);
+    enemies.splice(enemyIdx, 1);
+  }
+
   /**
    * Populates `enemiesByBuilding`, which is an array where each
    * element is an array of enemies representing a different building.
@@ -107,31 +121,31 @@ const createGame = ({
       [3600, 776, 43, 43, 26],
     ];
 
-    // const enemiesByBuilding = serverEnemies.map((i) => createEnemies(i));
+    const enemiesByBuilding = serverEnemies.map((i) => createEnemy(i.coords, m16Sound, i.id));
 
-    const enemiesByBuilding = [
-      createEnemies(bld0EnemyPositions),
-      createEnemies(bld1EnemyPositions),
-      createEnemies(bld2EnemyPositions),
-    ];
+    // const enemiesByBuilding = [
+    //   createEnemies(bld0EnemyPositions),
+    //   createEnemies(bld1EnemyPositions),
+    //   createEnemies(bld2EnemyPositions),
+    // ];
 
     enemiesByBuilding.forEach(function (bld) {
-      bld.forEach(function (e) {
-        enemies.push(e);
-      });
+      // bld.forEach(function (e) {
+      enemies.push(bld);
+      // });
     });
 
-    curSpawnBuilding = chooseRandom(enemiesByBuilding);
+    curSpawnBuilding = enemiesByBuilding;
   }
 
   function chooseRandom<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function createEnemies(positions: number[][]) {
-    const createdEnemies = positions.map((p) => createEnemy(p, m16Sound));
-    return createdEnemies;
-  }
+  // function createEnemies(positions: number[][]) {
+  //   const createdEnemies = positions.map((p) => createEnemy(p, m16Sound));
+  //   return createdEnemies;
+  // }
 
   /**
    * Attempts to spawn an Enemy. Note that an enemy
@@ -210,18 +224,18 @@ const createGame = ({
     }
 
     // Update all enemies and spawn some if necessary
-    let numVisibleEnemies = 0;
+    // let numVisibleEnemies = 0;
     enemies.forEach(function (e) {
       e.update();
 
       if (e.isVisible()) {
-        numVisibleEnemies++;
+        // numVisibleEnemies++;
       }
     });
 
-    if (numVisibleEnemies < calcVisibleEnemies()) {
-      spawnEnemy();
-    }
+    // if (numVisibleEnemies < calcVisibleEnemies()) {
+    //   spawnEnemy();
+    // }
   }
 
   function draw() {
@@ -284,7 +298,7 @@ const createGame = ({
     ctx.fillRect(can.width / 2 - 2, can.height / 2 - 2, 4, 4);
   }
 
-  return { draw, update };
+  return { draw, update, addPlayer, movePlayer, removePlayer };
 };
 
 export default createGame;

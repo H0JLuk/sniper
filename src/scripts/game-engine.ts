@@ -1,4 +1,5 @@
 import { createGame } from '.';
+import { ServerEnemy } from './types';
 
 const UPDATES_PER_SECOND = 30;
 const REFRESH_TIME = 1000 / UPDATES_PER_SECOND;
@@ -17,17 +18,27 @@ const createGameEngine = () => {
     }, REFRESH_TIME);
   };
 
-  // const update = (game: Game) => {
-  //   stop();
+  const addPlayer = (game: Game, enemy: ServerEnemy) => {
+    stop();
+    game.addPlayer(enemy);
+    start(game);
+  };
 
-  //   timer = setInterval(() => {
+  const movePlayer = (game: Game, enemy: ServerEnemy) => {
+    stop();
+    game.movePlayer(enemy);
+    start(game);
+  };
 
-  //   })
-  // }
+  const removePlayer = (game: Game, enemyId: number) => {
+    stop();
+    game.removePlayer(enemyId);
+    start(game);
+  };
 
   const stop = () => timer && clearInterval(timer);
 
-  return { start, stop };
+  return { start, addPlayer, movePlayer, removePlayer, stop };
 };
 
 export default createGameEngine;
