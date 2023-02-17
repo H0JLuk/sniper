@@ -1,4 +1,4 @@
 sniper
 ======
 
-A simple websocket sniper game written in typescript (no libs).
+A simple sniper game written in typescript with websocket (no libs).
